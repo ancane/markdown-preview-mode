@@ -64,7 +64,7 @@
                                                       (websocket-frame-payload frame)))
                                mdpm:remote-clients))
            :on-open (lambda (websocket) (push websocket mdpm:remote-clients))
-           :on-error (lambda (websocket type err) (message err))
+           :on-error (lambda (websocket type err) (message (concat "====> Error:" err)))
            :on-close (lambda (websocket) (mdpm:drop-closed-clients))
            ))
     (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
