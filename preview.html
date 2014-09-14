@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>Markdown preview</title>
+    <script>
+     var socket = new WebSocket("ws://localhost:7379");
+     socket.onopen = function() {
+         alert("Connection established.");
+     };
+     socket.onclose = function(event) {
+         if (event.wasClean) {
+             alert('Connection closed gracefully.');
+         } else {
+             alert('Connection terminated.');
+         }
+         alert('Code: ' + event.code + ' reason: ' + event.reason);
+     };
+     socket.onmessage = function(event) {
+         alert("Message received: " + event.data);
+     };
+     socket.onerror = function(error) {
+         alert("Error: " + error.message);
+     };
+    </script>
+  </head>
+  <body>
+    <article id="markdown-body">
+      <p>Markdown preview</p>
+    </article>
+  </body>
+</html>

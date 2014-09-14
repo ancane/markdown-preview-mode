@@ -1,4 +1,9 @@
-Markdown preview minor mode
+Markdown preview mode
 ===========================
 
-Markdown mode extention with realtime preview
+Markdown mode extension with realtime preview. Minor mode.
+
+Depends on:
+
+* markdown-mode
+* websocket.el
