@@ -63,10 +63,11 @@
                                  (websocket-send-text ws
                                                       (websocket-frame-payload frame)))
                                mdpm:remote-clients))
-           :on-open (lambda (websocket) (push websocket mdpm:remote-clients))
+           :on-open (lambda (websocket)
+                      (push websocket mdpm:remote-clients)
+                      (mdpm:sent-preview-to websocket))
            :on-error (lambda (websocket type err) (message (concat "====> Error:" err)))
-           :on-close (lambda (websocket) (mdpm:drop-closed-clients))
-           ))
+           :on-close (lambda (websocket) (mdpm:drop-closed-clients))))
     (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
     (mdpm:open-browser-preview)))
 
@@ -81,10 +82,12 @@
                        (setq mdpm:local-client nil))))))
 
 (defun mdpm:send-preview ()
+  (mdpm:sent-preview-to mdpm:local-client))
+
+(defun mdpm:sent-preview-to (websocket)
   (markdown markdown-output-buffer-name)
   (with-current-buffer (get-buffer markdown-output-buffer-name)
-    (websocket-send-text mdpm:local-client (buffer-substring-no-properties (point-min) (point-max))))
-  )
+    (websocket-send-text websocket (buffer-substring-no-properties (point-min) (point-max)))))
 
 (defun mdpm:start ()
   (mdpm:start-websocket-server)
@@ -98,7 +101,7 @@
   (interactive)
   (mdpm:open-browser-preview))
 
-(defun markdown-preview-kill-websocket-server ()
+(defun markdown-preview-cleanup ()
   (interactive)
   (mdpm:stop-websocket-server))
 

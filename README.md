@@ -15,11 +15,7 @@ and `websocket.el` to deliver html to browser.
 
 ## Starting preview
 
-`M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer.
-
-If you'v closed the preview window, you can start it over with
-`M-x markdown-preview-open-browser`.
-
+`M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer. If you'v closed the preview window, you can start it over with `M-x markdown-preview-open-browser`. All websockets will be cleaned up on emacs termination. If you'd like to perform cleanup manually run `M-x markdown-preview-cleanup`.
 
 ## Multimarkdown
 
@@ -37,3 +33,5 @@ Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Bro
 ## Theme
 
 [Solarized-dark](https://github.com/thomasf/solarized-css)
+
+## El-get recipe included
