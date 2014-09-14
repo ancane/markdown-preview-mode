@@ -49,6 +49,10 @@
     (setq mdpm:websocket-server nil
           mdpm:remote-clients nil)))
 
+(defun mdpm:drop-closed-clients ()
+  (setq mdpm:remote-clients
+        (remove-if-not #'websocket-openp mdpm:remote-clients)))
+
 (defun mdpm:start-websocket-server ()
   (when (not mdpm:websocket-server)
     (setq mdpm:websocket-server
@@ -57,14 +61,11 @@
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws)
                                  (websocket-send-text ws
-                                  (websocket-frame-payload frame)))
+                                                      (websocket-frame-payload frame)))
                                mdpm:remote-clients))
-           :on-open (lambda (websocket)
-                      (push websocket mdpm:remote-clients)
-                      )
-           :on-close (lambda (websocket)
-                       (delete websocket mdpm:remote-clients)
-                       )
+           :on-open (lambda (websocket) (push websocket mdpm:remote-clients))
+           :on-error (lambda (websocket type err) (message err))
+           :on-close (lambda (websocket) (mdpm:drop-closed-clients))
            ))
     (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
     (mdpm:open-browser-preview)))
@@ -91,7 +92,7 @@
   (add-hook 'after-save-hook 'mdpm:send-preview nil t))
 
 (defun mdpm:stop ()
-  (remove-hook 'after-save-hook 'mdpm:send-preview))
+  (remove-hook 'after-save-hook 'mdpm:send-preview t))
 
 (defun markdown-preview-open-browser ()
   (interactive)
