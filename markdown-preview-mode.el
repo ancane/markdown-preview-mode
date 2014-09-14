@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2014 <igor.shimko@gmail.com>
 
-;; Author: Kostafey <kostafey@gmail.com>
+;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
 ;; Package-Requires: ((websocket "1.3"))
@@ -34,10 +34,20 @@
 
 (defvar mdpm:websocket-port 7379)
 (defvar mdpm:websocket-server nil)
-(defvar mdpm:websocket-clients nil)
+(defvar mdpm:local-client nil)
+(defvar mdpm:remote-clients nil)
 (defvar mdpm:directory (file-name-directory load-file-name))
 
-;; (setq mdpm:websocket-server (get-process "websocket server on port 7379"))
+(defun mdpm:open-browser-preview ()
+  (browse-url (concat mdpm:directory "preview.html")))
+
+(defun mdpm:stop-websocket-server ()
+  (when mdpm:local-client
+    (websocket-close mdpm:local-client))
+  (when mdpm:websocket-server
+    (delete-process mdpm:websocket-server)
+    (setq mdpm:websocket-server nil
+          mdpm:remote-clients nil)))
 
 (defun mdpm:start-websocket-server ()
   (when (not mdpm:websocket-server)
@@ -46,39 +56,46 @@
            mdpm:websocket-port
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws)
-                                 ;; send frame only if ws != websocket
-                                 (websocket-send-text
-                                  ws
-                                  (websocket-frame-payload frame))))
-                         mdpm:websocket-clients)
+                                 (websocket-send-text ws
+                                  (websocket-frame-payload frame)))
+                               mdpm:remote-clients))
            :on-open (lambda (websocket)
-                      (push websocket mdpm:websocket-clients))
+                      (push websocket mdpm:remote-clients)
+                      )
            :on-close (lambda (websocket)
-                       (delete websocket mdpm:websocket-clients)))))
-  (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
-  (mdpm:open-browser))
+                       (delete websocket mdpm:remote-clients)
+                       )
+           ))
+    (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
+    (mdpm:open-browser-preview)))
 
-(defun mdpm:open-browser ()
-  (browse-url (concat mdpm:directory "preview.html")))
+(defun mdpm:start-local-client ()
+  (when (not mdpm:local-client)
+    (setq mdpm:local-client
+          (websocket-open
+           (format "ws://localhost:%d" mdpm:websocket-port)
+           :on-error (lambda (ws type err)
+                       (message "error connecting"))
+           :on-close (lambda (websocket)
+                       (setq mdpm:local-client nil))))))
 
-(defun mdpm:stop-websocket-server ()
-  (when mdpm:websocket-server
-    (delete-process mdpm:websocket-server)
-    (setq mdpm:websocket-server nil
-          mdpm:websocket-clients nil)))
-
-(defun mdpm:send ())
+(defun mdpm:send-preview ()
+  (markdown markdown-output-buffer-name)
+  (with-current-buffer (get-buffer markdown-output-buffer-name)
+    (websocket-send-text mdpm:local-client (buffer-substring-no-properties (point-min) (point-max))))
+  )
 
 (defun mdpm:start ()
   (mdpm:start-websocket-server)
-  (add-hook 'after-save-hook 'mdpm:send nil t))
+  (mdpm:start-local-client)
+  (add-hook 'after-save-hook 'mdpm:send-preview nil t))
 
 (defun mdpm:stop ()
-  (remove-hook 'after-save-hook 'mdpm:send))
+  (remove-hook 'after-save-hook 'mdpm:send-preview))
 
 (defun markdown-preview-open-browser ()
   (interactive)
-  (mdpm:open-browser))
+  (mdpm:open-browser-preview))
 
 (defun markdown-preview-kill-websocket-server ()
   (interactive)

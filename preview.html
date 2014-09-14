@@ -4,25 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
     <title>Markdown preview</title>
+    <link href="style.css" media="all" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>
-     var socket = new WebSocket("ws://localhost:7379");
-     socket.onopen = function() {
-         alert("Connection established.");
-     };
-     socket.onclose = function(event) {
-         if (event.wasClean) {
-             alert('Connection closed gracefully.');
-         } else {
-             alert('Connection terminated.');
-         }
-         alert('Code: ' + event.code + ' reason: ' + event.reason);
-     };
-     socket.onmessage = function(event) {
-         alert("Message received: " + event.data);
-     };
-     socket.onerror = function(error) {
-         alert("Error: " + error.message);
-     };
+     (function($, undefined) {
+         var socket = new WebSocket("ws://localhost:7379");
+         socket.onopen = function() {
+             console.log("Connection established.");
+         };
+         socket.onclose = function(event) {
+             if (event.wasClean) {
+                 alert('Connection closed gracefully.');
+             } else {
+                 alert('Connection terminated.');
+             }
+             console.log('Code: ' + event.code + ' reason: ' + event.reason);
+         };
+         socket.onmessage = function(event) {
+             $("#markdown-body").html(event.data);
+         };
+         socket.onerror = function(error) {
+             alert("Error: " + error.message);
+         };
+     })(jQuery);
     </script>
   </head>
   <body>
