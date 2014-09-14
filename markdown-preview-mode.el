@@ -36,10 +36,10 @@
 (defvar mdpm:websocket-server nil)
 (defvar mdpm:local-client nil)
 (defvar mdpm:remote-clients nil)
-(defvar mdpm:directory (file-name-directory load-file-name))
+(defvar mdpm:preview-url (concat (file-name-directory load-file-name) "preview.html"))
 
 (defun mdpm:open-browser-preview ()
-  (browse-url (concat mdpm:directory "preview.html")))
+  (browse-url mdpm:preview-url))
 
 (defun mdpm:stop-websocket-server ()
   (when mdpm:local-client

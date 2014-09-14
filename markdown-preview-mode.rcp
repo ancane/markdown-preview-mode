@@ -1,0 +1,5 @@
+(:name markdown-preview-mode
+       :description "Markdown preview mode with websocket.el"
+       :type github
+       :website "https://github.com/ancane/markdown-preview-mode.git"
+       :pkgname "ancane/markdown-preview-mode")
