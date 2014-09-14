@@ -54,7 +54,12 @@
            :on-open (lambda (websocket)
                       (push websocket mdpm:websocket-clients))
            :on-close (lambda (websocket)
-                       (delete websocket mdpm:websocket-clients))))))
+                       (delete websocket mdpm:websocket-clients)))))
+  (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
+  (mdpm:open-browser))
+
+(defun mdpm:open-browser ()
+  (browse-url (concat mdpm:directory "preview.html")))
 
 (defun mdpm:stop-websocket-server ()
   (when mdpm:websocket-server
@@ -65,27 +70,27 @@
 (defun mdpm:send ())
 
 (defun mdpm:start ()
-  (message "MDP: Start")
   (mdpm:start-websocket-server)
-  (browse-url (concat mdpm:directory "preview.html"))
-  (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
   (add-hook 'after-save-hook 'mdpm:send nil t))
 
 (defun mdpm:stop ()
-  (message "MDP: Stop")
-  (mdpm:stop-websocket-server)
-  (remove-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
   (remove-hook 'after-save-hook 'mdpm:send))
+
+(defun markdown-preview-open-browser ()
+  (interactive)
+  (mdpm:open-browser))
+
+(defun markdown-preview-kill-websocket-server ()
+  (interactive)
+  (mdpm:stop-websocket-server))
 
 (define-minor-mode markdown-preview-mode
   "Markdown preview mode"
   :group 'markdown-preview-mode
   :init-value nil
-
   (when (not (equal major-mode 'markdown-mode))
     (markdown-mode))
-
-  (if (not markdown-preview-mode)
+  (if markdown-preview-mode
       (mdpm:start)
     (mdpm:stop)))
 
