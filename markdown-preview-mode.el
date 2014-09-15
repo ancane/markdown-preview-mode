@@ -1,11 +1,11 @@
-;;; markdown-preview-mode.el --- markdown realtime preview.
+;;; markdown-preview-mode.el --- markdown realtime preview minor mode.
 
 ;; Copyright (C) 2014 <igor.shimko@gmail.com>
 
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Package-Requires: ((websocket "1.3"))
+;; Package-Requires: ((websocket "1.3") (markdown-mode "2.0"))
 
 ;; This file is not part of GNU Emacs.
 
