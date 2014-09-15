@@ -37,6 +37,7 @@
 (defvar mdpm:local-client nil)
 (defvar mdpm:remote-clients nil)
 (defvar mdpm:preview-url (concat (file-name-directory load-file-name) "preview.html"))
+(defvar mdpm:style "http://thomasf.github.io/solarized-css/solarized-dark.min.css")
 
 (defun mdpm:open-browser-preview ()
   (browse-url mdpm:preview-url))
@@ -85,9 +86,20 @@
   (mdpm:sent-preview-to mdpm:local-client))
 
 (defun mdpm:sent-preview-to (websocket)
-  (markdown markdown-output-buffer-name)
+  (when markdown-preview-mode
+    (markdown markdown-output-buffer-name))
   (with-current-buffer (get-buffer markdown-output-buffer-name)
-    (websocket-send-text websocket (buffer-substring-no-properties (point-min) (point-max)))))
+    (websocket-send-text websocket
+                         (concat
+                          "<div>"
+                          "<span id='style'>"
+                          mdpm:style
+                          "</span>"
+                          "<div id='content'>"
+                          (buffer-substring-no-properties (point-min) (point-max))
+                          "</div>"
+                          "</div>")
+                         )))
 
 (defun mdpm:start ()
   (mdpm:start-websocket-server)

@@ -21,10 +21,17 @@
              console.log('Code: ' + event.code + ' reason: ' + event.reason);
          };
          socket.onmessage = function(event) {
-             $("#markdown-body").html(event.data);
+             loadCSS($(event.data).find("#style").text());
+             $("#markdown-body").html($(event.data).find("#content").html());
          };
          socket.onerror = function(error) {
              alert("Error: " + error.message);
+         };
+
+         loadCSS = function(href) {
+             var cssLink = $("<link rel='stylesheet' type='text/css' href='"+href+"'>");
+             $("link[type='text/css']").remove();
+             $("head").append(cssLink);
          };
      })(jQuery);
     </script>
