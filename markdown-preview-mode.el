@@ -27,17 +27,26 @@
 (require 'websocket)
 (require 'markdown-mode)
 
-(defgroup markdown-preview-mode nil
+(defgroup markdown-preview nil
   "Markdown preview mode"
   :group 'text
-  :prefix "mdpm:")
+  :prefix "mdpm:"
+  :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
-(defvar mdpm:websocket-port 7379)
+(defcustom markdown-preview-port 7379
+  "Markdown preview websocket server port"
+  :group 'markdown-preview
+  :type 'integer)
+
+(defcustom markdown-preview-style "http://thomasf.github.io/solarized-css/solarized-dark.min.css"
+  "Markdown preview style URI"
+  :group 'markdown-preview
+  :type 'string)
+
 (defvar mdpm:websocket-server nil)
 (defvar mdpm:local-client nil)
 (defvar mdpm:remote-clients nil)
 (defvar mdpm:preview-url (concat (file-name-directory load-file-name) "preview.html"))
-(defvar mdpm:style "http://thomasf.github.io/solarized-css/solarized-dark.min.css")
 
 (defun mdpm:open-browser-preview ()
   (browse-url mdpm:preview-url))
@@ -58,7 +67,7 @@
   (when (not mdpm:websocket-server)
     (setq mdpm:websocket-server
           (websocket-server
-           mdpm:websocket-port
+           markdown-preview-port
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws)
                                  (websocket-send-text ws
@@ -76,7 +85,7 @@
   (when (not mdpm:local-client)
     (setq mdpm:local-client
           (websocket-open
-           (format "ws://localhost:%d" mdpm:websocket-port)
+           (format "ws://localhost:%d" markdown-preview-port)
            :on-error (lambda (ws type err)
                        (message "error connecting"))
            :on-close (lambda (websocket)
@@ -93,7 +102,7 @@
                          (concat
                           "<div>"
                           "<span id='style'>"
-                          mdpm:style
+                          markdown-preview-style
                           "</span>"
                           "<div id='content'>"
                           (buffer-substring-no-properties (point-min) (point-max))
