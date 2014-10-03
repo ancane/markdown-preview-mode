@@ -35,7 +35,7 @@ Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Bro
 [Solarized-dark](http://thomasf.github.io/solarized-css/)
 
 In order to change preview styling, run `M-x customize-option` -> `markdown-preview-style`
-and specify your favourite markdonw css URI.
+and specify a URL to your favourite markdown css file.
 
 ## Websocket port
 
