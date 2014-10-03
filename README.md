@@ -3,7 +3,7 @@ Markdown preview mode
 
 ## Description
 Opens a preview in a browser, updated upon buffer save.
-Same preview window is valid accross multiple mardown buffers.
+Same preview window is valid across multiple mardown buffers.
 
 ## Dependencies
 
