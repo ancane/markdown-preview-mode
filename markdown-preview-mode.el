@@ -95,20 +95,31 @@
   (mdpm:sent-preview-to mdpm:local-client))
 
 (defun mdpm:sent-preview-to (websocket)
-  (when markdown-preview-mode
-    (markdown markdown-output-buffer-name))
-  (with-current-buffer (get-buffer markdown-output-buffer-name)
-    (websocket-send-text websocket
-                         (concat
-                          "<div>"
-                          "<span id='style'>"
-                          markdown-preview-style
-                          "</span>"
-                          "<div id='content'>"
-                          (buffer-substring-no-properties (point-min) (point-max))
-                          "</div>"
-                          "</div>")
-                         )))
+  (let ((mark-position-percent
+         (number-to-string
+          (truncate
+           (* 100
+              (/
+               (float (line-number-at-pos))
+               (count-lines (point-min) (point-max))))))))
+
+    (when markdown-preview-mode
+      (markdown markdown-output-buffer-name))
+    (with-current-buffer (get-buffer markdown-output-buffer-name)
+      (websocket-send-text websocket
+                           (concat
+                            "<div>"
+                            "<span id='style'>"
+                            markdown-preview-style
+                            "</span>"
+                            "<span id='position-percentage'>"
+                            mark-position-percent
+                            "</span>"
+                            "<div id='content'>"
+                            (buffer-substring-no-properties (point-min) (point-max))
+                            "</div>"
+                            "</div>")
+                           ))))
 
 (defun mdpm:start ()
   (mdpm:start-websocket-server)

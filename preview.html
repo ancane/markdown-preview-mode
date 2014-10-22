@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
     <title>Markdown preview</title>
     <link href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" rel="stylesheet"></link>
+    <style>
+     code, kbd, pre, samp {
+         line-height: 1.2em;
+     }
+    </style>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>
      (function($, undefined) {
@@ -23,6 +28,8 @@
          socket.onmessage = function(event) {
              loadCSS($(event.data).find("#style").text());
              $("#markdown-body").html($(event.data).find("#content").html());
+             var scroll = $(document).height() * ($(event.data).find("#position-percentage").html() / 100);
+             $("html, body").animate({ scrollTop: scroll }, 600);
          };
          socket.onerror = function(error) {
              alert("Error: " + error.message);
