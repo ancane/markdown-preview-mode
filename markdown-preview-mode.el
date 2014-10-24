@@ -100,9 +100,8 @@
           (truncate
            (* 100
               (/
-               (float (line-number-at-pos))
+               (float (-  (line-number-at-pos) (count-screen-lines (window-start) (point))))
                (count-lines (point-min) (point-max))))))))
-
     (when markdown-preview-mode
       (markdown markdown-output-buffer-name))
     (with-current-buffer (get-buffer markdown-output-buffer-name)

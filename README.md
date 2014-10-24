@@ -4,6 +4,7 @@ Markdown preview mode
 ## Description
 Opens a preview in a browser, updated upon buffer save.
 Same preview window is valid across multiple markdown buffers.
+Scrolls browser window to keep your editing position visible.
 
 ## Dependencies
 
