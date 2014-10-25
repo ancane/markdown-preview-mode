@@ -47,6 +47,11 @@
 (defvar mdpm:local-client nil)
 (defvar mdpm:remote-clients nil)
 (defvar mdpm:preview-url (concat (file-name-directory load-file-name) "preview.html"))
+(defvar mdpm:idle-timer nil "Preview idle timer")
+
+(defun mdpm:stop-idle-timer ()
+  (when (timerp mdpm:idle-timer)
+    (cancel-timer mdpm:idle-timer)))
 
 (defun mdpm:open-browser-preview ()
   (browse-url mdpm:preview-url))
@@ -75,7 +80,7 @@
                                mdpm:remote-clients))
            :on-open (lambda (websocket)
                       (push websocket mdpm:remote-clients)
-                      (mdpm:sent-preview-to websocket))
+                      (mdpm:send-preview-to websocket))
            :on-error (lambda (websocket type err) (message (concat "====> Error:" err)))
            :on-close (lambda (websocket) (mdpm:drop-closed-clients))))
     (add-hook 'kill-emacs-hook 'mdpm:stop-websocket-server)
@@ -92,9 +97,9 @@
                        (setq mdpm:local-client nil))))))
 
 (defun mdpm:send-preview ()
-  (mdpm:sent-preview-to mdpm:local-client))
+  (mdpm:send-preview-to mdpm:local-client))
 
-(defun mdpm:sent-preview-to (websocket)
+(defun mdpm:send-preview-to (websocket)
   (let ((mark-position-percent
          (number-to-string
           (truncate
@@ -123,10 +128,14 @@
 (defun mdpm:start ()
   (mdpm:start-websocket-server)
   (mdpm:start-local-client)
-  (add-hook 'after-save-hook 'mdpm:send-preview nil t))
+  (setq mdpm:idle-timer
+        (run-with-idle-timer 2 t 'mdpm:send-preview))
+  (add-hook 'after-save-hook 'mdpm:send-preview nil t)
+  (add-hook 'kill-buffer-hook 'mdpm:stop-idle-timer))
 
 (defun mdpm:stop ()
-  (remove-hook 'after-save-hook 'mdpm:send-preview t))
+  (remove-hook 'after-save-hook 'mdpm:send-preview t)
+  (mdpm:stop-idle-timer))
 
 (defun markdown-preview-open-browser ()
   (interactive)
