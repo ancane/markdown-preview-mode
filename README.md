@@ -42,4 +42,6 @@ and specify a URL to your favourite markdown css file.
 
 Adjustable by `M-x customize-option` -> `markdown-preview-port`.
 
-## El-get recipe included
+## el-get
+* `M-x el-get-self-update`
+* `M-x el-get-install` -> `markdown-preview-mode`
