@@ -97,7 +97,8 @@
                        (setq mdpm:local-client nil))))))
 
 (defun mdpm:send-preview ()
-  (mdpm:send-preview-to mdpm:local-client))
+  (when (bound-and-true-p markdown-preview-mode)
+    (mdpm:send-preview-to mdpm:local-client)))
 
 (defun mdpm:send-preview-to (websocket)
   (let ((mark-position-percent
@@ -105,7 +106,7 @@
           (truncate
            (* 100
               (/
-               (float (-  (line-number-at-pos) (count-screen-lines (window-start) (point))))
+               (float (-  (line-number-at-pos) (/ (count-screen-lines (window-start) (point)) 2)))
                (count-lines (point-min) (point-max))))))))
     (when markdown-preview-mode
       (markdown markdown-output-buffer-name))
