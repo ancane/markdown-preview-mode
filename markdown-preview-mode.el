@@ -132,7 +132,7 @@
   (setq mdpm:idle-timer
         (run-with-idle-timer 2 t 'mdpm:send-preview))
   (add-hook 'after-save-hook 'mdpm:send-preview nil t)
-  (add-hook 'kill-buffer-hook 'mdpm:stop-idle-timer))
+  (add-hook 'kill-buffer-hook 'mdpm:stop))
 
 (defun mdpm:stop ()
   (remove-hook 'after-save-hook 'mdpm:send-preview t)
