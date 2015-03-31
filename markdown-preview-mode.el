@@ -150,7 +150,9 @@
   "Markdown preview mode"
   :group 'markdown-preview-mode
   :init-value nil
-  (when (not (equal major-mode 'markdown-mode))
+  (when (not (or
+              (equal major-mode 'markdown-mode)
+              (equal major-mode 'gfm-mode)))
     (markdown-mode))
   (if markdown-preview-mode
       (mdpm:start)
