@@ -37,7 +37,7 @@
 
          loadCSS = function(href) {
              var cssLink = $("<link rel='stylesheet' type='text/css' href='"+href+"'>");
-             $("link[type='text/css']").remove();
+             $("link[rel='stylesheet']").remove();
              $("head").append(cssLink);
          };
      })(jQuery);
