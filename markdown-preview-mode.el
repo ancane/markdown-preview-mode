@@ -5,7 +5,7 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Package-Requires: ((websocket "1.3") (markdown-mode "2.0"))
+;; Package-Requires: ((websocket "1.3") (markdown-mode "2.0") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -22,8 +22,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-(eval-when-compile (require 'cl))
+;;; Code:
 
+(require 'cl-lib)
 (require 'websocket)
 (require 'markdown-mode)
 
@@ -66,7 +67,7 @@
 
 (defun mdpm:drop-closed-clients ()
   (setq mdpm:remote-clients
-        (remove-if-not #'websocket-openp mdpm:remote-clients)))
+        (cl-remove-if-not #'websocket-openp mdpm:remote-clients)))
 
 (defun mdpm:start-websocket-server ()
   (when (not mdpm:websocket-server)
