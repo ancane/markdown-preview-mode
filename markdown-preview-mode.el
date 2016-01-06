@@ -147,6 +147,7 @@
   (interactive)
   (mdpm:stop-websocket-server))
 
+;;;###autoload
 (define-minor-mode markdown-preview-mode
   "Markdown preview mode"
   :group 'markdown-preview-mode
