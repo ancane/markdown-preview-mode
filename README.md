@@ -16,7 +16,7 @@ and `websocket.el` to deliver html to browser.
 
 ## Usage
 
-`M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer. If you'v closed the preview window, you can start it over with `M-x markdown-preview-open-browser`. All websockets will be cleaned up on emacs termination. If you'd like to perform cleanup manually run `M-x markdown-preview-cleanup`.
+`M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer. If you've closed the preview window, you can start it over with `M-x markdown-preview-open-browser`. All websockets will be cleaned up on emacs termination. If you'd like to perform cleanup manually run `M-x markdown-preview-cleanup`.
 
 ## Multimarkdown
 
@@ -27,7 +27,7 @@ set to `multimarkdown` and make sure it's in your PATH.
 
 ## Browser
 
-In order to select prefered browser, customize
+In order to select preferred browser, customize
 `M-x customize-option` -> `browse-url-browser-function` option.
 Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Browse Url](http://www.emacswiki.org/emacs/BrowseUrl).
 
