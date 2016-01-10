@@ -1,15 +1,18 @@
 Markdown preview mode
 ===========================
 
+> **Markdown realtime preview minor mode**
+
 ## Description
 Opens a preview in a browser, updated upon buffer save.
+
 Same preview window is valid across multiple markdown buffers.
 Scrolls browser window to keep your editing position visible.
 
 ## Dependencies
 
-* markdown-mode.el
-* websocket.el
+* [markdown-mode.el](https://github.com/defunkt/markdown-mode)
+* [websocket.el](https://github.com/ahyatt/emacs-websocket)
 
 Makes use of `markdown-mode`, which already can transform markdown into html
 and `websocket.el` to deliver html to browser.
