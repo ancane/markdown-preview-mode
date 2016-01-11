@@ -44,20 +44,28 @@
   :group 'markdown-preview
   :type 'string)
 
-(defvar markdown-preview--websocket-server nil)
-(defvar markdown-preview--local-client nil)
-(defvar markdown-preview--remote-clients nil)
-(defvar markdown-preview--preview-url (concat (file-name-directory load-file-name) "preview.html"))
+(defvar markdown-preview--websocket-server nil
+  "`markdown-preview' Websocket server.")
+(defvar markdown-preview--local-client nil
+  "`markdown-preview' local client.")
+(defvar markdown-preview--remote-clients nil
+  "List of `markdown-preview' websocket remote clients.")
+(defvar markdown-preview--preview-url
+  (concat (file-name-directory load-file-name) "preview.html")
+  "Location of `markdown-preview' html.")
 (defvar markdown-preview--idle-timer nil "Preview idle timer")
 
 (defun markdown-preview--stop-idle-timer ()
+  "Stop the `markdown-preview' idle timer."
   (when (timerp markdown-preview--idle-timer)
     (cancel-timer markdown-preview--idle-timer)))
 
 (defun markdown-preview--open-browser-preview ()
+  "Open the markdown preview in the browser."
   (browse-url markdown-preview--preview-url))
 
 (defun markdown-preview--stop-websocket-server ()
+  "Stop the `markdown-preview' websocket server."
   (when markdown-preview--local-client
     (websocket-close markdown-preview--local-client))
   (when markdown-preview--websocket-server
@@ -66,10 +74,12 @@
           markdown-preview--remote-clients nil)))
 
 (defun markdown-preview--drop-closed-clients ()
+  "Clean closed clients in `markdown-preview--remote-clients' list."
   (setq markdown-preview--remote-clients
         (cl-remove-if-not #'websocket-openp markdown-preview--remote-clients)))
 
 (defun markdown-preview--start-websocket-server ()
+  "Start `markdown-preview' websocket server."
   (when (not markdown-preview--websocket-server)
     (setq markdown-preview--websocket-server
           (websocket-server
@@ -88,6 +98,7 @@
     (markdown-preview--open-browser-preview)))
 
 (defun markdown-preview--start-local-client ()
+  "Start the `markdown-preview' local client."
   (when (not markdown-preview--local-client)
     (setq markdown-preview--local-client
           (websocket-open
@@ -98,10 +109,12 @@
                        (setq markdown-preview--local-client nil))))))
 
 (defun markdown-preview--send-preview ()
+  "Send the `markdown-preview' preview to clients."
   (when (bound-and-true-p markdown-preview-mode)
     (markdown-preview--send-preview-to markdown-preview--local-client)))
 
 (defun markdown-preview--send-preview-to (websocket)
+  "Send the `markdown-preview' to a specific WEBSOCKET."
   (let ((mark-position-percent
          (number-to-string
           (truncate
@@ -128,6 +141,7 @@
                            ))))
 
 (defun markdown-preview--start ()
+  "Start `markdown-preview' mode."
   (markdown-preview--start-websocket-server)
   (markdown-preview--start-local-client)
   (setq markdown-preview--idle-timer
@@ -136,20 +150,23 @@
   (add-hook 'kill-buffer-hook 'markdown-preview--stop))
 
 (defun markdown-preview--stop ()
+  "Stop `markdown-preview' mode."
   (remove-hook 'after-save-hook 'markdown-preview--send-preview t)
   (markdown-preview--stop-idle-timer))
 
 (defun markdown-preview-open-browser ()
+  "Open the `markdown-preview' in the browser."
   (interactive)
   (markdown-preview--open-browser-preview))
 
 (defun markdown-preview-cleanup ()
+  "Cleanup `markdown-preview' mode."
   (interactive)
   (markdown-preview--stop-websocket-server))
 
 ;;;###autoload
 (define-minor-mode markdown-preview-mode
-  "Markdown preview mode"
+  "Markdown preview mode."
   :group 'markdown-preview-mode
   :init-value nil
   (when (not (or
