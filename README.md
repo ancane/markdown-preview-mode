@@ -18,7 +18,7 @@ Makes use of `markdown-mode`, which already can transform markdown into html
 and `websocket.el` to deliver html to browser.
 
 ## Usage
-*
+
 `M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer. If you've closed the preview window, you can start it over with `M-x markdown-preview-open-browser`. All websockets will be cleaned up on emacs termination. If you'd like to perform cleanup manually run `M-x markdown-preview-cleanup`.
 
 ## Multimarkdown
