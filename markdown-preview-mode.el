@@ -5,7 +5,7 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Package-Requires: ((websocket "1.3") (markdown-mode "2.0") (cl-lib "0.5"))
+;; Package-Requires: ((websocket "1.5") (markdown-mode "2.1") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -22,6 +22,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+;;
+;; This package makes use of websockets to deliver rendered markdown to a web browser.
+;; Updates happen upon buffer save or on idle.
+;;
 ;;; Code:
 
 (require 'cl-lib)
@@ -35,25 +40,30 @@
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
 (defcustom markdown-preview-port 7379
-  "Markdown preview websocket server port"
+  "Markdown preview websocket server port."
   :group 'markdown-preview
   :type 'integer)
 
 (defcustom markdown-preview-style "http://thomasf.github.io/solarized-css/solarized-dark.min.css"
-  "Markdown preview style URI"
+  "Markdown preview style URI."
   :group 'markdown-preview
   :type 'string)
 
 (defvar markdown-preview--websocket-server nil
   "`markdown-preview' Websocket server.")
+
 (defvar markdown-preview--local-client nil
   "`markdown-preview' local client.")
+
 (defvar markdown-preview--remote-clients nil
   "List of `markdown-preview' websocket remote clients.")
+
 (defvar markdown-preview--preview-url
   (concat (file-name-directory load-file-name) "preview.html")
   "Location of `markdown-preview' html.")
-(defvar markdown-preview--idle-timer nil "Preview idle timer")
+
+(defvar markdown-preview--idle-timer nil
+  "Preview idle timer.")
 
 (defun markdown-preview--stop-idle-timer ()
   "Stop the `markdown-preview' idle timer."
@@ -122,8 +132,7 @@
               (/
                (float (-  (line-number-at-pos) (/ (count-screen-lines (window-start) (point)) 2)))
                (count-lines (point-min) (point-max))))))))
-    (when markdown-preview-mode
-      (markdown markdown-output-buffer-name))
+    (markdown markdown-output-buffer-name)
     (with-current-buffer (get-buffer markdown-output-buffer-name)
       (websocket-send-text websocket
                            (concat
@@ -154,11 +163,13 @@
   (remove-hook 'after-save-hook 'markdown-preview--send-preview t)
   (markdown-preview--stop-idle-timer))
 
+;;;###autoload
 (defun markdown-preview-open-browser ()
   "Open the `markdown-preview' in the browser."
   (interactive)
   (markdown-preview--open-browser-preview))
 
+;;;###autoload
 (defun markdown-preview-cleanup ()
   "Cleanup `markdown-preview' mode."
   (interactive)
@@ -167,7 +178,7 @@
 ;;;###autoload
 (define-minor-mode markdown-preview-mode
   "Markdown preview mode."
-  :group 'markdown-preview-mode
+  :group 'markdown-preview
   :init-value nil
   (when (not (or
               (equal major-mode 'markdown-mode)
