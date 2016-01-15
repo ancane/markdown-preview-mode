@@ -6,21 +6,11 @@ Markdown preview mode
 
 > **Markdown realtime preview minor mode**
 
-
-
 ## Description
 Opens a preview in a browser, updated upon buffer save.
 
 Same preview window is valid across multiple markdown buffers.
 Scrolls browser window to keep your editing position visible.
-
-## Dependencies
-
-* [markdown-mode.el](https://github.com/defunkt/markdown-mode)
-* [websocket.el](https://github.com/ahyatt/emacs-websocket)
-
-Makes use of `markdown-mode`, which already can transform markdown into html
-and `websocket.el` to deliver html to browser.
 
 ## Usage
 
@@ -50,6 +40,20 @@ and specify a URL to your favourite markdown css file.
 
 Adjustable by `M-x customize-option` -> `markdown-preview-port`.
 
-## el-get
+## Installation
+### Melpa
+
+*Melpa* recipe is available, so `markdown-preview-mode` is just a `package-install` away!
+
+### el-get
 * `M-x el-get-self-update`
 * `M-x el-get-install` -> `markdown-preview-mode`
+
+
+## Dependencies
+
+* [markdown-mode.el](https://github.com/defunkt/markdown-mode)
+* [websocket.el](https://github.com/ahyatt/emacs-websocket)
+
+Makes use of `markdown-mode`, which already can transform markdown into html
+and `websocket.el` to deliver html to browser.
