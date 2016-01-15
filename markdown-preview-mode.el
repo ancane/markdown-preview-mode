@@ -35,7 +35,7 @@
 (require 'markdown-mode)
 
 (defgroup markdown-preview nil
-  "Markdown preview mode"
+  "Markdown preview mode."
   :group 'text
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
@@ -45,7 +45,8 @@
   :group 'markdown-preview
   :type 'integer)
 
-(defcustom markdown-preview-style "http://thomasf.github.io/solarized-css/solarized-dark.min.css"
+(defcustom markdown-preview-style
+  "http://thomasf.github.io/solarized-css/solarized-dark.min.css"
   "Markdown preview style URI."
   :group 'markdown-preview
   :type 'string)
