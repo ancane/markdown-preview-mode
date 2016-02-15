@@ -4,8 +4,6 @@ Markdown preview mode
 [![MELPA Stable](http://stable.melpa.org/packages/markdown-preview-mode-badge.svg)](http://stable.melpa.org/#/markdown-preview-mode)
 [![MELPA](http://melpa.org/packages/markdown-preview-mode-badge.svg)](http://melpa.org/#/markdown-preview-mode)
 
-> **Markdown realtime preview minor mode**
-
 ## Description
 Opens a preview in a browser, updated upon buffer save.
 
