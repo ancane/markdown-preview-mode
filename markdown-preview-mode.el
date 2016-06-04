@@ -5,8 +5,8 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Version: 0.3
-;; Package-Requires: ((websocket "1.5") (markdown-mode "2.1") (cl-lib "0.5"))
+;; Version: 0.4
+;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -155,8 +155,7 @@
   (markdown-preview--start-local-client)
   (setq markdown-preview--idle-timer
         (run-with-idle-timer 2 t (lambda () (markdown-preview--send-preview))))
-  (add-hook 'after-save-hook 'markdown-preview--send-preview nil t)
-  (add-hook 'kill-buffer-hook 'markdown-preview--stop))
+  (add-hook 'after-save-hook 'markdown-preview--send-preview nil t))
 
 (defun markdown-preview--stop ()
   "Stop `markdown-preview' mode."
