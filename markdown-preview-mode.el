@@ -74,7 +74,12 @@
 
 (defun markdown-preview--open-browser-preview ()
   "Open the markdown preview in the browser."
-  (browse-url markdown-preview--preview-url))
+  (let* ((dir-of-buffer-to-preview (file-name-directory
+                                    (buffer-file-name (get-buffer (buffer-name)))))
+         (preview-file (concat dir-of-buffer-to-preview ".markdown-preview.html")))
+    (if (not (file-exists-p preview-file))
+        (copy-file markdown-preview--preview-url preview-file))
+    (browse-url preview-file)))
 
 (defun markdown-preview--stop-websocket-server ()
   "Stop the `markdown-preview' websocket server."
