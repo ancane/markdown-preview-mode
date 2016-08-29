@@ -5,7 +5,7 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Version: 0.4
+;; Version: 0.5
 ;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
@@ -51,6 +51,12 @@
   :group 'markdown-preview
   :type 'string)
 
+(defcustom markdown-preview-file-name
+  ".markdown-preview.html"
+  "Markdown preview file name"
+  :group 'markdown-preview
+  :type 'string)
+
 (defvar markdown-preview--websocket-server nil
   "`markdown-preview' Websocket server.")
 
@@ -74,9 +80,8 @@
 
 (defun markdown-preview--open-browser-preview ()
   "Open the markdown preview in the browser."
-  (let* ((dir-of-buffer-to-preview (file-name-directory
-                                    (buffer-file-name (get-buffer (buffer-name)))))
-         (preview-file (concat dir-of-buffer-to-preview ".markdown-preview.html")))
+  (let* ((dir-of-buffer-to-preview (file-name-directory (buffer-file-name)))
+         (preview-file (concat dir-of-buffer-to-preview markdown-preview-file-name)))
     (if (not (file-exists-p preview-file))
         (copy-file markdown-preview--preview-url preview-file))
     (browse-url preview-file)))
