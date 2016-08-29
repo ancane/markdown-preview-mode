@@ -170,7 +170,11 @@
 (defun markdown-preview--stop ()
   "Stop `markdown-preview' mode."
   (remove-hook 'after-save-hook 'markdown-preview--send-preview t)
-  (markdown-preview--stop-idle-timer))
+  (markdown-preview--stop-idle-timer)
+  (let ((preview-file (concat (file-name-directory (buffer-file-name)) markdown-preview-file-name)))
+    (if (file-exists-p preview-file)
+	(delete-file preview-file)))
+  )
 
 ;;;###autoload
 (defun markdown-preview-open-browser ()
