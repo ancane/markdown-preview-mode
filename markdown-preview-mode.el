@@ -110,7 +110,7 @@
     (setq markdown-preview--websocket-server
           (websocket-server
            markdown-preview-port
-	   :host markdown-preview-host
+           :host markdown-preview-host
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws) (websocket-send ws frame))
                                markdown-preview--remote-clients))
@@ -178,7 +178,7 @@
   (markdown-preview--stop-idle-timer)
   (let ((preview-file (concat (file-name-directory (buffer-file-name)) markdown-preview-file-name)))
     (if (file-exists-p preview-file)
-	(delete-file preview-file)))
+        (delete-file preview-file)))
   )
 
 ;;;###autoload
