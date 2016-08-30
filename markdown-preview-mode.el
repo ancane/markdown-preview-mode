@@ -5,7 +5,7 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Version: 0.5
+;; Version: 0.6
 ;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
@@ -40,6 +40,11 @@
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
+(defcustom markdown-preview-host "127.0.0.1"
+  "Markdown preview websocket server address."
+  :group 'markdown-preview
+  :type 'string)
+
 (defcustom markdown-preview-port 7379
   "Markdown preview websocket server port."
   :group 'markdown-preview
@@ -51,9 +56,8 @@
   :group 'markdown-preview
   :type 'string)
 
-(defcustom markdown-preview-file-name
-  ".markdown-preview.html"
-  "Markdown preview file name"
+(defcustom markdown-preview-file-name ".markdown-preview.html"
+  "Markdown preview file name."
   :group 'markdown-preview
   :type 'string)
 
@@ -106,6 +110,7 @@
     (setq markdown-preview--websocket-server
           (websocket-server
            markdown-preview-port
+	   :host markdown-preview-host
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws) (websocket-send ws frame))
                                markdown-preview--remote-clients))
