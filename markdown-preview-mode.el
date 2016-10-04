@@ -40,10 +40,11 @@
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
-(defcustom markdown-preview-host "127.0.0.1"
+(defcustom markdown-preview-host 'local
   "Markdown preview websocket server address."
   :group 'markdown-preview
-  :type 'string)
+  :type '(choice (const :tag "localhost" local)
+                 (string :tag "Custom host")))
 
 (defcustom markdown-preview-port 7379
   "Markdown preview websocket server port."
