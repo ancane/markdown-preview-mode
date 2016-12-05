@@ -13,7 +13,7 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>
      (function($, undefined) {
-         var socket = new WebSocket("ws://localhost:7379");
+         var socket = new WebSocket("ws://${WS_HOST}:${WS_PORT}");
          socket.onopen = function() {
              console.log("Connection established.");
          };

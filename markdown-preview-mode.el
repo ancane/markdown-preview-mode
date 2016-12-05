@@ -40,11 +40,10 @@
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
-(defcustom markdown-preview-host 'local
+(defcustom markdown-preview-host "localhost"
   "Markdown preview websocket server address."
   :group 'markdown-preview
-  :type '(choice (const :tag "localhost" local)
-                 (string :tag "Custom host")))
+  :type 'string)
 
 (defcustom markdown-preview-port 7379
   "Markdown preview websocket server port."
@@ -71,9 +70,9 @@
 (defvar markdown-preview--remote-clients nil
   "List of `markdown-preview' websocket remote clients.")
 
-(defvar markdown-preview--preview-url
+(defvar markdown-preview--preview-template
   (concat (file-name-directory load-file-name) "preview.html")
-  "Location of `markdown-preview' html.")
+  "Location of `markdown-preview' html template file.")
 
 (defvar markdown-preview--idle-timer nil
   "Preview idle timer.")
@@ -87,8 +86,13 @@
   "Open the markdown preview in the browser."
   (let* ((dir-of-buffer-to-preview (file-name-directory (buffer-file-name)))
          (preview-file (concat dir-of-buffer-to-preview markdown-preview-file-name)))
-    (if (not (file-exists-p preview-file))
-        (copy-file markdown-preview--preview-url preview-file))
+    (with-temp-file preview-file
+      (insert-file-contents markdown-preview--preview-template)
+      (if (search-forward "${WS_HOST}" nil t)
+	  (replace-match markdown-preview-host t))
+      (if (search-forward "${WS_PORT}" nil t)
+	  (replace-match (format "%s" markdown-preview-port) t))
+      (buffer-string))
     (browse-url preview-file)))
 
 (defun markdown-preview--stop-websocket-server ()
