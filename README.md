@@ -1,6 +1,7 @@
 Markdown preview mode
 ===========================
 
+
 [![MELPA Stable](http://stable.melpa.org/packages/markdown-preview-mode-badge.svg)](http://stable.melpa.org/#/markdown-preview-mode)
 [![MELPA](http://melpa.org/packages/markdown-preview-mode-badge.svg)](http://melpa.org/#/markdown-preview-mode)
 
@@ -33,6 +34,19 @@ Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Bro
 
 In order to change preview styling, run `M-x customize-option` -> `markdown-preview-style`
 and specify a URL to your favourite markdown css file.
+
+## Client javascript
+
+If you'd like to include additional javascript for the preview, add this to your init:
+
+```lisp
+(add-to-list 'markdown-preview-javascript "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML")
+```
+or, to make it async:
+
+```lisp
+(add-to-list 'markdown-preview-javascript '("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" . async))
+```
 
 ## Websocket port
 

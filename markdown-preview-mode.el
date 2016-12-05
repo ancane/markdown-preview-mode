@@ -61,6 +61,9 @@
   :group 'markdown-preview
   :type 'string)
 
+(defvar markdown-preview-javascript (list "http://code.jquery.com/jquery-1.11.0.min.js")
+  "List of javascript libs for preview.")
+
 (defvar markdown-preview--websocket-server nil
   "`markdown-preview' Websocket server.")
 
@@ -90,6 +93,13 @@
       (insert-file-contents markdown-preview--preview-template)
       (if (search-forward "${MD_STYLE}" nil t)
 	  (replace-match markdown-preview-style t))
+      (if (search-forward "${MD_JS}" nil t)
+	  (replace-match
+	   (mapconcat (lambda (x)
+			(concat "<script src=\"" (if (consp x) (car x) x) "\"" (if (consp x) (format " %s" (cdr x))) "></script>" ))
+		      markdown-preview-javascript
+		      "\n")
+	   t))
       (if (search-forward "${WS_HOST}" nil t)
 	  (replace-match markdown-preview-host t))
       (if (search-forward "${WS_PORT}" nil t)
@@ -182,8 +192,7 @@
   (markdown-preview--stop-idle-timer)
   (let ((preview-file (concat (file-name-directory (buffer-file-name)) markdown-preview-file-name)))
     (if (file-exists-p preview-file)
-        (delete-file preview-file)))
-  )
+        (delete-file preview-file))))
 
 ;;;###autoload
 (defun markdown-preview-open-browser ()
