@@ -88,6 +88,8 @@
          (preview-file (concat dir-of-buffer-to-preview markdown-preview-file-name)))
     (with-temp-file preview-file
       (insert-file-contents markdown-preview--preview-template)
+      (if (search-forward "${MD_STYLE}" nil t)
+	  (replace-match markdown-preview-style t))
       (if (search-forward "${WS_HOST}" nil t)
 	  (replace-match markdown-preview-host t))
       (if (search-forward "${WS_PORT}" nil t)
@@ -157,9 +159,6 @@
       (websocket-send-text websocket
                            (concat
                             "<div>"
-                            "<span id='style'>"
-                            markdown-preview-style
-                            "</span>"
                             "<span id='position-percentage'>"
                             mark-position-percent
                             "</span>"

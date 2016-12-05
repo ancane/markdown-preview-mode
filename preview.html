@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
     <title>Markdown preview</title>
-    <link href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" rel="stylesheet"></link>
+    <link href="${MD_STYLE}" rel="stylesheet"></link>
     <style>
      code.json {
          line-height: 1.2em;
@@ -26,19 +26,12 @@
              console.log('Code: ' + event.code + ' reason: ' + event.reason);
          };
          socket.onmessage = function(event) {
-             loadCSS($(event.data).find("#style").text());
              $("#markdown-body").html($(event.data).find("#content").html());
              var scroll = $(document).height() * ($(event.data).find("#position-percentage").html() / 100);
              $("html, body").animate({ scrollTop: scroll }, 600);
          };
          socket.onerror = function(error) {
              alert("Error: " + error.message);
-         };
-
-         loadCSS = function(href) {
-             var cssLink = $("<link rel='stylesheet' type='text/css' href='"+href+"'>");
-             $("link[rel='stylesheet']").remove();
-             $("head").append(cssLink);
          };
      })(jQuery);
     </script>
