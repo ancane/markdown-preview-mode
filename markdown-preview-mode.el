@@ -5,8 +5,8 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, preview
-;; Version: 0.7
-;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5"))
+;; Version: 0.8
+;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5") (web-server "0.1.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -33,6 +33,7 @@
 (require 'cl-lib)
 (require 'websocket)
 (require 'markdown-mode)
+(require 'web-server)
 
 (defgroup markdown-preview nil
   "Markdown preview mode."
@@ -40,13 +41,18 @@
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
-(defcustom markdown-preview-host "localhost"
+(defcustom markdown-preview-ws-host "localhost"
   "Markdown preview websocket server address."
   :group 'markdown-preview
   :type 'string)
 
-(defcustom markdown-preview-port 7379
+(defcustom markdown-preview-ws-port 7379
   "Markdown preview websocket server port."
+  :group 'markdown-preview
+  :type 'integer)
+
+(defcustom markdown-preview-http-port 9000
+  "Markdown preview http server port."
   :group 'markdown-preview
   :type 'integer)
 
@@ -101,10 +107,26 @@
 		      "\n")
 	   t))
       (if (search-forward "${WS_HOST}" nil t)
-	  (replace-match markdown-preview-host t))
+	  (replace-match markdown-preview-ws-host t))
       (if (search-forward "${WS_PORT}" nil t)
-	  (replace-match (format "%s" markdown-preview-port) t))
+	  (replace-match (format "%s" markdown-preview-ws-port) t))
       (buffer-string))
+
+    (lexical-let ((docroot default-directory))
+      (ws-start
+       (lambda (request)
+	 (with-slots (process headers) request
+	   (let ((path (substring (cdr (assoc :GET headers)) 1)))
+	     (if (ws-in-directory-p docroot path)
+		 (if (file-directory-p path)
+		     (ws-send-directory-list process
+					     (expand-file-name path docroot) "^[^\.]")
+		   (ws-send-file process (expand-file-name path docroot)))
+	       (ws-send-404 process)))))
+       markdown-preview-http-port))
+
+    (setq markdown-preview-http-port (+ markdown-preview-http-port 1))
+    
     (browse-url preview-file)))
 
 (defun markdown-preview--stop-websocket-server ()
@@ -126,8 +148,8 @@
   (when (not markdown-preview--websocket-server)
     (setq markdown-preview--websocket-server
           (websocket-server
-           markdown-preview-port
-           :host markdown-preview-host
+           markdown-preview-ws-port
+           :host markdown-preview-ws-host
            :on-message (lambda (websocket frame)
                          (mapc (lambda (ws) (websocket-send ws frame))
                                markdown-preview--remote-clients))
@@ -144,7 +166,7 @@
   (when (not markdown-preview--local-client)
     (setq markdown-preview--local-client
           (websocket-open
-           (format "ws://localhost:%d" markdown-preview-port)
+           (format "ws://%s:%d" markdown-preview-ws-host markdown-preview-ws-port)
            :on-error (lambda (ws type err)
                        (message "error connecting"))
            :on-close (lambda (websocket)
