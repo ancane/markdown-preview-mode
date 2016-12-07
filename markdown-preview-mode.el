@@ -72,7 +72,7 @@
   "Markdown preview websocket server address."
   :group 'markdown-preview
   :type '(choice (const :tag "As local file" file)
-                 (const :tag "Via http" 'http)
+                 (const :tag "Via http" http)
                  (const :tag "Off" nil)))
 
 (defvar markdown-preview-javascript (list "http://code.jquery.com/jquery-1.11.0.min.js")
