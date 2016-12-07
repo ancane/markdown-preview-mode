@@ -87,9 +87,8 @@
 (defvar markdown-preview--remote-clients nil
   "List of `markdown-preview' websocket remote clients.")
 
-(defvar markdown-preview--preview-template
-  (concat (file-name-directory load-file-name) "preview.html")
-  "Location of `markdown-preview' html template file.")
+(defvar markdown-preview--home-dir (file-name-directory load-file-name)
+  "`markdown-preview-mode' home directory.")
 
 (defvar markdown-preview--idle-timer nil
   "Preview idle timer.")
@@ -100,9 +99,9 @@
     (cancel-timer markdown-preview--idle-timer)))
 
 (defun markdown-preview--read-preview-template (preview-file)
-  "Reads preview template and writes rendered copy to `preview-file', ready to be open in browser."
+  "Read preview template and writes rendered copy to PREVIEW-FILE, ready to be open in browser."
   (with-temp-file preview-file
-    (insert-file-contents markdown-preview--preview-template)
+    (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
     (if (search-forward "${MD_STYLE}" nil t)
         (replace-match markdown-preview-style t))
     (if (search-forward "${MD_JS}" nil t)
@@ -122,18 +121,19 @@
     (buffer-string)))
 
 (defun markdown-preview--start-http-server (port)
-  "Start http server at `port' to serve preview file via http."
+  "Start http server at PORT to serve preview file via http."
   (lexical-let ((docroot default-directory))
     (ws-start
      (lambda (request)
        (with-slots (process headers) request
-         (let ((path (substring (cdr (assoc :GET headers)) 1)))
-           (if (ws-in-directory-p docroot path)
-               (if (file-directory-p path)
-                   (ws-send-directory-list process
-                                           (expand-file-name path docroot) "^[^\.]")
-                 (ws-send-file process (expand-file-name path docroot)))
-             (ws-send-404 process)))))
+         (let* ((path (substring (cdr (assoc :GET headers)) 1))
+               (filename (expand-file-name path docroot)))
+           (if (string= path "favicon.ico")
+               (ws-send-file process (expand-file-name path markdown-preview--home-dir))
+             (if (and (not (file-directory-p filename)) (file-exists-p filename))
+                 (ws-send-file process filename)
+               (ws-send-404 process)
+               )))))
      markdown-preview-http-port)))
 
 (defun markdown-preview--open-browser-preview ()
