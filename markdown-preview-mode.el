@@ -4,9 +4,9 @@
 
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
-;; Keywords: markdown, preview
+;; Keywords: markdown, gfm, convenience
 ;; Version: 0.8
-;; Package-Requires: ((websocket "1.6") (markdown-mode "2.1") (cl-lib "0.5") (web-server "0.1.1"))
+;; Package-Requires: ( (emacs "24.3") (websocket "1.6") (markdown-mode "2.0") (cl-lib "0.5") (web-server "0.1.1"))
 
 ;; This file is not part of GNU Emacs.
 
