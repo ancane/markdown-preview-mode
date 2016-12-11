@@ -12,6 +12,7 @@
          var socket = new WebSocket("ws://${WS_HOST}:${WS_PORT}");
          socket.onopen = function() {
              console.log("Connection established.");
+	     socket.send("MDPM-Register-UUID: ${MD_UUID}");
          };
          socket.onclose = function(event) {
              if (event.wasClean) {

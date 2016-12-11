@@ -1,7 +1,6 @@
 Markdown preview mode
 ===========================
 
-
 [![MELPA Stable](http://stable.melpa.org/packages/markdown-preview-mode-badge.svg)](http://stable.melpa.org/#/markdown-preview-mode)
 [![MELPA](http://melpa.org/packages/markdown-preview-mode-badge.svg)](http://melpa.org/#/markdown-preview-mode)
 
@@ -68,7 +67,6 @@ Adjustable by `M-x customize-option` -> `markdown-preview-port`.
 ### el-get
 * `M-x el-get-self-update`
 * `M-x el-get-install` -> `markdown-preview-mode`
-
 
 ## Dependencies
 
