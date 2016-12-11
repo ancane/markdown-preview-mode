@@ -34,7 +34,6 @@
 (require 'websocket)
 (require 'markdown-mode)
 (require 'web-server)
-(require 'url-util)
 
 (defgroup markdown-preview nil
   "Markdown preview mode."
@@ -57,9 +56,8 @@
   :group 'markdown-preview
   :type 'integer)
 
-(defcustom markdown-preview-style
-  "http://thomasf.github.io/solarized-css/solarized-dark.min.css"
-  "Markdown preview style URI."
+(defcustom markdown-preview-style nil
+  "Deprecated. Use `markdown-preview-stylesheets'."
   :group 'markdown-preview
   :type 'string)
 
@@ -75,8 +73,12 @@
                  (const :tag "Via http" http)
                  (const :tag "Off" nil)))
 
-(defvar markdown-preview-javascript (list "http://code.jquery.com/jquery-1.11.0.min.js")
-  "List of javascript libs for preview.")
+(defvar markdown-preview-javascript '()
+  "List of client javascript libs for preview.")
+
+(defvar markdown-preview-stylesheets
+  (list "http://thomasf.github.io/solarized-css/solarized-dark.min.css")
+  "List of client stylesheets for preview.")
 
 (defvar markdown-preview--websocket-server nil
   "`markdown-preview' Websocket server.")
@@ -98,22 +100,36 @@
   (when (timerp markdown-preview--idle-timer)
     (cancel-timer markdown-preview--idle-timer)))
 
+(defun markdown-preview--css-links ()
+  "Get list of styles for preview in backward compatible way."
+  (let* ((custom-style (list markdown-preview-style))
+	 (all-styles
+	  (mapc (lambda (x) (add-to-list 'custom-style x t)) markdown-preview-stylesheets)))
+    (mapconcat
+     (lambda (x)
+       (concat "<link rel=\"stylesheet\" type=\"text/css\" href=\"" x "\">"))
+     all-styles
+     "\n")))
+
+(defun markdown-preview--scripts ()
+  "Get list of javascript script tags for preview."
+  (mapconcat
+   (lambda (x)
+     (concat
+      "<script src=\"" (if (consp x) (car x) x) "\""
+      (if (consp x) (format " %s" (cdr x)))
+      "></script>"))
+   markdown-preview-javascript
+   "\n"))
+
 (defun markdown-preview--read-preview-template (preview-file)
   "Read preview template and writes rendered copy to PREVIEW-FILE, ready to be open in browser."
   (with-temp-file preview-file
     (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
     (if (search-forward "${MD_STYLE}" nil t)
-        (replace-match markdown-preview-style t))
+        (replace-match (markdown-preview--css-links) t))
     (if (search-forward "${MD_JS}" nil t)
-        (replace-match
-         (mapconcat (lambda (x)
-                      (concat
-                       "<script src=\"" (if (consp x) (car x) x) "\""
-                       (if (consp x) (format " %s" (cdr x)))
-                       "></script>"))
-                    markdown-preview-javascript
-                    "\n")
-         t))
+        (replace-match (markdown-preview--scripts) t))
     (if (search-forward "${WS_HOST}" nil t)
         (replace-match markdown-preview-ws-host t))
     (if (search-forward "${WS_PORT}" nil t)
@@ -127,27 +143,26 @@
      (lambda (request)
        (with-slots (process headers) request
          (let* ((path (substring (cdr (assoc :GET headers)) 1))
-               (filename (expand-file-name path docroot)))
-           (if (string= path "favicon.ico")
-               (ws-send-file process (expand-file-name path markdown-preview--home-dir))
-             (if (and (not (file-directory-p filename)) (file-exists-p filename))
-                 (ws-send-file process filename)
-               (ws-send-404 process)
-               )))))
+		(filename (expand-file-name path docroot)))
+	   ;;(message (format "===> Path: [%s]" path))
+	   (if (string= path "")
+	       (ws-send-file process (expand-file-name markdown-preview-file-name docroot))	     
+	     (if (string= path "favicon.ico")
+		 (ws-send-file process (expand-file-name path markdown-preview--home-dir))
+	       (if (and (not (file-directory-p filename)) (file-exists-p filename))
+		   (ws-send-file process filename)
+		 (ws-send-404 process)
+		 ))))))
      markdown-preview-http-port)))
 
 (defun markdown-preview--open-browser-preview ()
-  "Open the markdown preview in the browser."
-  (let* ((preview-file (expand-file-name markdown-preview-file-name default-directory))
-         (preview-address (url-encode-url
-                           (format "http://localhost:%d/%s" markdown-preview-http-port markdown-preview-file-name))))
-    (markdown-preview--read-preview-template preview-file)
-    (when (eq markdown-preview-auto-open 'file)
-      (browse-url preview-file))
-    (when (eq markdown-preview-auto-open 'http)
-      (browse-url preview-address))
-    (unless markdown-preview-auto-open
-      (message (format "Preview address: %s" preview-address)))))
+  "Open the markdown preview in the browser." 
+  (when (eq markdown-preview-auto-open 'file)
+    (browse-url (expand-file-name markdown-preview-file-name default-directory)))
+  (when (eq markdown-preview-auto-open 'http)
+    (browse-url (format "http://localhost:%d" markdown-preview-http-port)))
+  (unless markdown-preview-auto-open
+    (message (format "Preview address: http://0.0.0.0:%d" markdown-preview-http-port))))
 
 (defun markdown-preview--stop-websocket-server ()
   "Stop the `markdown-preview' websocket server."
@@ -222,6 +237,8 @@
 
 (defun markdown-preview--start ()
   "Start `markdown-preview' mode."
+  (markdown-preview--read-preview-template
+   (expand-file-name markdown-preview-file-name default-directory))
   (markdown-preview--start-websocket-server)
   (markdown-preview--start-local-client)
   (markdown-preview--start-http-server markdown-preview-http-port)

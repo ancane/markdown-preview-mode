@@ -4,12 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
     <title>Markdown preview</title>
-    <link href="${MD_STYLE}" rel="stylesheet"></link>
-    <style>
-     code.json {
-         line-height: 1.2em;
-     }
-    </style>
+    ${MD_STYLE}
+    <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
     ${MD_JS}
     <script>
      (function($, undefined) {
@@ -19,9 +15,9 @@
          };
          socket.onclose = function(event) {
              if (event.wasClean) {
-                 alert('Connection closed gracefully.');
+                 console.log('Connection closed gracefully.');
              } else {
-                 alert('Connection terminated.');
+                 console.log('Connection terminated.');
              }
              console.log('Code: ' + event.code + ' reason: ' + event.reason);
          };
@@ -31,7 +27,7 @@
              $("html, body").animate({ scrollTop: scroll }, 600);
          };
          socket.onerror = function(error) {
-             alert("Error: " + error.message);
+             console.log("Error: " + error.message);
          };
      })(jQuery);
     </script>
