@@ -137,15 +137,15 @@
 rendered copy to PREVIEW-FILE, ready to be open in browser."
   (with-temp-file preview-file
     (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
-    (if (search-forward "${MD_STYLE}" nil t)
+    (when (search-forward "${MD_STYLE}" nil t)
         (replace-match (markdown-preview--css-links) t))
-    (if (search-forward "${MD_JS}" nil t)
+    (when (search-forward "${MD_JS}" nil t)
         (replace-match (markdown-preview--scripts) t))
-    (if (search-forward "${WS_HOST}" nil t)
+    (when (search-forward "${WS_HOST}" nil t)
         (replace-match markdown-preview-host t))
-    (if (search-forward "${WS_PORT}" nil t)
+    (when (search-forward "${WS_PORT}" nil t)
         (replace-match (format "%s" markdown-preview-ws-port) t))
-    (if (search-forward "${MD_UUID}" nil t)
+    (when (search-forward "${MD_UUID}" nil t)
         (replace-match (format "%s" preview-uuid) t))
     (buffer-string)))
 
@@ -233,7 +233,9 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
            :host markdown-preview-host
            :on-message (lambda (websocket frame)
                          (let ((ws-frame-text (websocket-frame-payload frame)))
-                           (if (string-prefix-p "MDPM-Register-UUID: " ws-frame-text)
+                           (if (and
+				(stringp ws-frame-text)
+				(string-prefix-p "MDPM-Register-UUID: " ws-frame-text))
                                (let ((ws-uuid (substring ws-frame-text 20)))
                                  (puthash ws-uuid websocket markdown-preview--remote-clients)
                                  (markdown-preview--send-preview-to websocket ws-uuid))
