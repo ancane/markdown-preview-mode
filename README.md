@@ -75,3 +75,4 @@ Adjustable by `M-x customize-option` -> `markdown-preview-port`.
 
 Makes use of `markdown-mode`, which already can transform markdown into html
 and `websocket.el` to deliver html to browser.
+

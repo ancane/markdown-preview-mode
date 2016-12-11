@@ -42,7 +42,7 @@
   :prefix "markdown-preview-"
   :link '(url-link "https://github.com/ancane/markdown-preview-mode"))
 
-(defcustom markdown-preview-ws-host "localhost"
+(defcustom markdown-preview-host "localhost"
   "Markdown preview websocket server address."
   :group 'markdown-preview
   :type 'string)
@@ -142,7 +142,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
     (if (search-forward "${MD_JS}" nil t)
         (replace-match (markdown-preview--scripts) t))
     (if (search-forward "${WS_HOST}" nil t)
-        (replace-match markdown-preview-ws-host t))
+        (replace-match markdown-preview-host t))
     (if (search-forward "${WS_PORT}" nil t)
         (replace-match (format "%s" markdown-preview-ws-port) t))
     (if (search-forward "${MD_UUID}" nil t)
@@ -230,7 +230,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
     (setq markdown-preview--websocket-server
           (websocket-server
            markdown-preview-ws-port
-           :host markdown-preview-ws-host
+           :host markdown-preview-host
            :on-message (lambda (websocket frame)
                          (let ((ws-frame-text (websocket-frame-payload frame)))
                            (if (string-prefix-p "MDPM-Register-UUID: " ws-frame-text)
@@ -243,7 +243,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
                                 frame))
                              )))
            :on-open (lambda (websocket) (message "Websocket opened"))
-           :on-error (lambda (websocket type err) (message (concat "====> Error:" err)))
+           :on-error (lambda (websocket type err) (message (format "====> Error: %s" err)))
            :on-close (lambda (websocket) (markdown-preview--drop-closed-clients))))
     (add-hook 'kill-emacs-hook 'markdown-preview--stop-websocket-server))
   (markdown-preview--open-browser-preview))
@@ -253,7 +253,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
   (when (not markdown-preview--local-client)
     (setq markdown-preview--local-client
           (websocket-open
-           (format "ws://%s:%d" markdown-preview-ws-host markdown-preview-ws-port)
+           (format "ws://%s:%d" markdown-preview-host markdown-preview-ws-port)
            :on-error (lambda (ws type err)
                        (message "error connecting"))
            :on-close (lambda (websocket)
@@ -277,6 +277,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
     (let ((md-buffer (gethash preview-uuid markdown-preview--preview-buffers)))
       (when md-buffer
         (with-current-buffer md-buffer
+
           (markdown markdown-output-buffer-name))))
 
     (with-current-buffer markdown-output-buffer-name ;; get-buffer
