@@ -4,39 +4,40 @@ Markdown preview mode
 [![MELPA Stable](http://stable.melpa.org/packages/markdown-preview-mode-badge.svg)](http://stable.melpa.org/#/markdown-preview-mode)
 [![MELPA](http://melpa.org/packages/markdown-preview-mode-badge.svg)](http://melpa.org/#/markdown-preview-mode)
 
-## Description
-Opens a preview in a browser, updated upon buffer save.
+Markdown preview in emacs features:
 
-Same preview window is valid across multiple markdown buffers.
-Scrolls browser window to keep your editing position visible.
+* on save/idle preview update
+* scroll sync
+* custom/extra css and javascript
+* remote preview
+* multiple simultaneous previews
 
-## Usage
+## Install
 
-`M-x markdown-preview-mode` will open preview in a browser and will start `markdown-mode` if it's not yet running for current buffer. If you've closed the preview window, you can start it over with `M-x markdown-preview-open-browser`. All websockets will be cleaned up on emacs termination. If you'd like to perform cleanup manually run `M-x markdown-preview-cleanup`.
+* `package-install markdown-preview-mode`
+* `el-get-install markdown-preview-mode`
 
-## Multimarkdown
+## Run
 
-In order to enable multimarkdown support, customize
-`M-x customize-option` -> `markdown-command` variable.
-Look for `Markdown Command` which is set to `markdown` by default,
-set to `multimarkdown` and make sure it's in your PATH.
+* `markdown-preview-mode` - start mode and open preview window.
+* `markdown-preview-open-browser` - open priview window for current buffer.
+* `markdown-preview-cleanup` - cleanup running processes (close websocket and http servers).
 
-## Browser
+## Customize
 
-In order to select preferred browser, customize
-`M-x customize-option` -> `browse-url-browser-function` option.
-Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Browse Url](http://www.emacswiki.org/emacs/BrowseUrl).
+* `customize-option markdown-command` - change markdown processor.
+* `customize-option` [browse-url-browser-function](http://www.emacswiki.org/emacs/BrowseUrl) - select different browser.
+* `customize-option markdown-preview-host` - change http/websocket server address.
+* `customize-option markdown-preview-ws-port` - change websocket server port.
+* `customize-option markdown-preview-http-port` - change http server port.
 
-## Stylesheets
+## Extra css
 
-Default theme for preview is [Solarized-dark](http://thomasf.github.io/solarized-css/)
-
-Extra css are added with:
-
+### Add extra css to default solarized dark theme
 ```lisp
 (add-to-list 'markdown-preview-stylesheets "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css")
 ```
-Override theme completely with:
+### Override theme completely with
 
 ```lisp
 (setq markdown-preview-stylesheets (list "http://thomasf.github.io/solarized-css/solarized-light.min.css"))
@@ -44,35 +45,19 @@ Override theme completely with:
 
 ## Extra javascript
 
-If you'd like to include additional javascript for the preview, add this to your init:
+### Add MathJax
 
 ```lisp
 (add-to-list 'markdown-preview-javascript "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML")
 ```
-or, to make it async:
+### async
 
 ```lisp
 (add-to-list 'markdown-preview-javascript '("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" . async))
 ```
 
-## Websocket port
-
-Adjustable by `M-x customize-option` -> `markdown-preview-port`.
-
-## Installation
-### Melpa
-
-*Melpa* recipe is available, so `markdown-preview-mode` is just a `package-install` away!
-
-### el-get
-* `M-x el-get-self-update`
-* `M-x el-get-install` -> `markdown-preview-mode`
-
 ## Dependencies
 
 * [markdown-mode.el](https://github.com/defunkt/markdown-mode)
 * [websocket.el](https://github.com/ahyatt/emacs-websocket)
-
-Makes use of `markdown-mode`, which already can transform markdown into html
-and `websocket.el` to deliver html to browser.
-
+* [web-server.el](https://github.com/eschulte/emacs-web-server)
