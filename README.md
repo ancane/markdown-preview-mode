@@ -28,14 +28,22 @@ In order to select preferred browser, customize
 `M-x customize-option` -> `browse-url-browser-function` option.
 Select your browser from `Value menu`. If it's not there, follow [EmacsWiki: Browse Url](http://www.emacswiki.org/emacs/BrowseUrl).
 
-## Theme
+## Stylesheets
 
-[Solarized-dark](http://thomasf.github.io/solarized-css/)
+Default theme for preview is [Solarized-dark](http://thomasf.github.io/solarized-css/)
 
-In order to change preview styling, run `M-x customize-option` -> `markdown-preview-style`
-and specify a URL to your favourite markdown css file.
+Extra css are added with:
 
-## Client javascript
+```lisp
+(add-to-list 'markdown-preview-stylesheets "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css")
+```
+Override theme completely with:
+
+```lisp
+(setq markdown-preview-stylesheets (list "http://thomasf.github.io/solarized-css/solarized-light.min.css"))
+```
+
+## Extra javascript
 
 If you'd like to include additional javascript for the preview, add this to your init:
 
