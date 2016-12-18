@@ -17,6 +17,10 @@ Markdown preview in emacs features:
 * `package-install markdown-preview-mode`
 * `el-get-install markdown-preview-mode`
 
+### Markdown processor
+
+`markdown-preview-mode` depends on `markdown-mode` for markdown processor, defined by `markdown-command` and it is [markdown](http://daringfireball.net/projects/markdown/) by default. Please, make sure it is in your `$PATH`.
+
 ## Run
 
 * `markdown-preview-mode` - start mode and open preview window.
@@ -25,8 +29,8 @@ Markdown preview in emacs features:
 
 ## Customize
 
-* `customize-option markdown-command` - change markdown processor.
-* `customize-option` [browse-url-browser-function](http://www.emacswiki.org/emacs/BrowseUrl) - select different browser.
+* `customize-option markdown-command` - change markdown processor; take a look at [multimarkdown](http://fletcherpenney.net/multimarkdown/)
+* `customize-option` [browse-url-browser-function](http://www.emacswiki.org/emacs/BrowseUrl) - change the browser.
 * `customize-option markdown-preview-host` - change http/websocket server address.
 * `customize-option markdown-preview-ws-port` - change websocket server port.
 * `customize-option markdown-preview-http-port` - change http server port.
@@ -61,3 +65,4 @@ Markdown preview in emacs features:
 * [markdown-mode.el](https://github.com/defunkt/markdown-mode)
 * [websocket.el](https://github.com/ahyatt/emacs-websocket)
 * [web-server.el](https://github.com/eschulte/emacs-web-server)
+* [uuidgen](https://github.com/kanru/uuidgen-el)
