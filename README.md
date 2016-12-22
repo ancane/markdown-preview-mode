@@ -34,14 +34,22 @@ Markdown preview in emacs features:
 * `customize-option markdown-preview-host` - change http/websocket server address.
 * `customize-option markdown-preview-ws-port` - change websocket server port.
 * `customize-option markdown-preview-http-port` - change http server port.
+* `customize-option markdown-preview-auto-open` - change the way preview window is open.
+
+## Remote access
+
+* Set `markdown-preview-auto-open` to `nil` to disable window opening at remote emacs server.
+* Start `markdown-preview-mode`. Http link for preview will be printed to *Messages*. If not - run `markdown-preview-open-browser` to get the link printed.
+* Setup 2 tunnels for `0.0.0.0:7379` and `0.0.0.0:9000` and then open preview link in local browser. Adjust tunnels according to your custom `ws-port` and `http-port` settings.
 
 ## Extra css
 
 ### Add extra css to default solarized dark theme
+
 ```lisp
 (add-to-list 'markdown-preview-stylesheets "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css")
 ```
-### Override theme completely with
+### Override theme completely
 
 ```lisp
 (setq markdown-preview-stylesheets (list "http://thomasf.github.io/solarized-css/solarized-light.min.css"))
