@@ -39,7 +39,7 @@ Markdown preview in emacs features:
 ## Remote access
 
 * Set `markdown-preview-auto-open` to `nil` to disable window opening at remote emacs server.
-* Start `markdown-preview-mode`. Http link for preview will be printed to *Messages*. If not - run `markdown-preview-open-browser` to get the link printed.
+* Start `markdown-preview-mode`. Http link for preview will be printed to `*Messages*` buffer. If not - run `markdown-preview-open-browser` to get the link printed.
 * Setup 2 tunnels for `0.0.0.0:7379` and `0.0.0.0:9000` and then open preview link in local browser. Adjust tunnels according to your custom `ws-port` and `http-port` settings.
 
 ## Extra css
