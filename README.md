@@ -24,7 +24,7 @@ Markdown preview in emacs features:
 ## Run
 
 * `markdown-preview-mode` - start mode and open preview window.
-* `markdown-preview-open-browser` - open priview window for current buffer.
+* `markdown-preview-open-browser` - open preview window for current buffer.
 * `markdown-preview-cleanup` - cleanup running processes (close websocket and http servers).
 
 ## Customize
