@@ -52,6 +52,11 @@
   :group 'markdown-preview
   :type 'integer)
 
+(defcustom markdown-preview-http-host "localhost"
+  "Markdown preview http server address."
+  :group 'markdown-preview
+  :type 'string)
+
 (defcustom markdown-preview-http-port 9000
   "Markdown preview http server port."
   :group 'markdown-preview
@@ -176,7 +181,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
                            (ws-send-file process filename)
                          (ws-send-404 process)
                          ))))))
-             markdown-preview-http-port)))))
+             markdown-preview-http-port nil :host markdown-preview-http-host)))))
 
 (defun markdown-preview--parse-uuid (headers)
   "Find uuid query param in HEADERS."
