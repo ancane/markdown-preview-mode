@@ -30,6 +30,7 @@
 ;;
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'cl-lib)
 (require 'websocket)
 (require 'markdown-mode)
