@@ -116,14 +116,16 @@
   (when (timerp markdown-preview--idle-timer)
     (cancel-timer markdown-preview--idle-timer)))
 
-(defun markdown-preview--css-links ()
+(defun markdown-preview--css ()
   "Get list of styles for preview in backward compatible way."
   (let* ((custom-style (list markdown-preview-style))
          (all-styles
           (mapc (lambda (x) (add-to-list 'custom-style x t)) markdown-preview-stylesheets)))
     (mapconcat
      (lambda (x)
-       (concat "<link rel=\"stylesheet\" type=\"text/css\" href=\"" x "\">"))
+       (if (string-match-p "^[\n\t ]*<style" x)
+           x
+         (concat "<link rel=\"stylesheet\" type=\"text/css\" href=\"" x "\">")))
      all-styles
      "\n")))
 
@@ -131,10 +133,12 @@
   "Get list of javascript script tags for preview."
   (mapconcat
    (lambda (x)
-     (concat
-      "<script src=\"" (if (consp x) (car x) x) "\""
-      (if (consp x) (format " %s" (cdr x)))
-      "></script>"))
+     (if (string-match-p "^[\n\t ]*<script" x)
+         x
+       (concat
+        "<script src=\"" (if (consp x) (car x) x) "\""
+        (if (consp x) (format " %s" (cdr x)))
+        "></script>")))
    markdown-preview-javascript
    "\n"))
 
@@ -144,7 +148,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
   (with-temp-file preview-file
     (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
     (when (search-forward "${MD_STYLE}" nil t)
-        (replace-match (markdown-preview--css-links) t))
+        (replace-match (markdown-preview--css) t))
     (when (search-forward "${MD_JS}" nil t)
         (replace-match (markdown-preview--scripts) t))
     (when (search-forward "${WS_HOST}" nil t)
