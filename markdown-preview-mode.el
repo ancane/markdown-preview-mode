@@ -159,10 +159,21 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
         (replace-match (format "%s" preview-uuid) t))
     (buffer-string)))
 
+;; Emacs 26 async network workaround
+(defun markdown-preview--fix-network-process-wait (plist)
+  "Ensure PLIST contains :nowait nil."
+  (if (and (>= emacs-major-version 26)
+	   (equal (plist-get plist :name) "ws-server")
+	   (plist-get plist :server)
+	   (plist-get plist :nowait))
+      (plist-put plist :nowait nil)
+	plist))
+
 (defun markdown-preview--start-http-server (port)
   "Start http server at PORT to serve preview file via http."
   (unless markdown-preview--http-server
     (lexical-let ((docroot default-directory))
+      (advice-add 'make-network-process :filter-args #'markdown-preview--fix-network-process-wait)
       (setq markdown-preview--http-server
             (ws-start
              (lambda (request)
@@ -186,7 +197,8 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
                            (ws-send-file process filename)
                          (ws-send-404 process)
                          ))))))
-             markdown-preview-http-port nil :host markdown-preview-http-host)))))
+             markdown-preview-http-port nil :host markdown-preview-http-host))
+      (advice-remove 'make-network-process #'my-filter))))
 
 (defun markdown-preview--parse-uuid (headers)
   "Find uuid query param in HEADERS."
