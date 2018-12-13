@@ -75,4 +75,3 @@ Markdown preview in emacs features:
 * [markdown-mode.el](https://github.com/defunkt/markdown-mode)
 * [websocket.el](https://github.com/ahyatt/emacs-websocket)
 * [web-server.el](https://github.com/eschulte/emacs-web-server)
-* [uuidgen](https://github.com/kanru/uuidgen-el)

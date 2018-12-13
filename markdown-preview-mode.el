@@ -5,8 +5,8 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, gfm, convenience
-;; Version: 0.9.1
-;; Package-Requires: ((emacs "24.3") (websocket "1.6") (markdown-mode "2.0") (cl-lib "0.5") (web-server "0.1.1") (uuidgen "0.3"))
+;; Version: 0.9.2
+;; Package-Requires: ((emacs "24.3") (websocket "1.6") (markdown-mode "2.0") (cl-lib "0.5") (web-server "0.1.1") )
 
 ;; This file is not part of GNU Emacs.
 
@@ -35,7 +35,6 @@
 (require 'websocket)
 (require 'markdown-mode)
 (require 'web-server)
-(require 'uuidgen)
 
 (defgroup markdown-preview nil
   "Markdown preview mode."
@@ -97,7 +96,7 @@
   "`markdown-preview' local client.")
 
 (defvar markdown-preview--remote-clients (make-hash-table :test 'equal)
-  "Remote clients hashtable. UUID -> WS")
+  "Remote clients hashtable. UUID -> WS.")
 
 (defvar markdown-preview--home-dir (file-name-directory load-file-name)
   "`markdown-preview-mode' home directory.")
@@ -109,7 +108,7 @@
   "Unique preview identifier.")
 
 (defvar markdown-preview--preview-buffers (make-hash-table :test 'equal)
-  "Preview buffers hashtable. UUID -> buffer-name.")
+  "Preview buffers hashtable. UUID -> buffer name.")
 
 (defun markdown-preview--stop-idle-timer ()
   "Stop the `markdown-preview' idle timer."
@@ -143,8 +142,7 @@
    "\n"))
 
 (defun markdown-preview--read-preview-template (preview-uuid preview-file)
-  "Read preview template and writes identified by PREVIEW-UUID
-rendered copy to PREVIEW-FILE, ready to be open in browser."
+  "Read preview template and writes identified by PREVIEW-UUID rendered copy to PREVIEW-FILE, ready to be open in browser."
   (with-temp-file preview-file
     (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
     (when (search-forward "${MD_STYLE}" nil t)
@@ -161,7 +159,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
 
 ;; Emacs 26 async network workaround
 (defun markdown-preview--fix-network-process-wait (plist)
-  "Ensure PLIST contains :nowait nil."
+  "Ensure PLIST contain :nowait nil."
   (if (and (>= emacs-major-version 26)
 	   (equal (plist-get plist :name) "ws-server")
 	   (plist-get plist :server)
@@ -284,12 +282,12 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
                        (setq markdown-preview--local-client nil))))))
 
 (defun markdown-preview--send-preview (preview-uuid)
-  "Send the `markdown-preview' preview to clients."
+  "Send the `markdown-preview' with PREVIEW-UUID preview to clients."
   (when (bound-and-true-p markdown-preview-mode)
     (markdown-preview--send-preview-to markdown-preview--local-client preview-uuid)))
 
 (defun markdown-preview--send-preview-to (websocket preview-uuid)
-  "Send the `markdown-preview' to a specific WEBSOCKET."
+  "Send the `markdown-preview' with PREVIEW-UUID to a specific WEBSOCKET."
   (let ((mark-position-percent
          (number-to-string
           (truncate
@@ -319,7 +317,7 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
 
 (defun markdown-preview--start ()
   "Start `markdown-preview' mode."
-  (setq-local markdown-preview--uuid (uuidgen-1))
+  (setq-local markdown-preview--uuid (markdown-preview--random-uuid))
   (puthash markdown-preview--uuid (buffer-name) markdown-preview--preview-buffers)
   ;;  (gethash markdown-preview--uuid markdown-preview--preview-buffers)
   (markdown-preview--read-preview-template
@@ -344,6 +342,37 @@ rendered copy to PREVIEW-FILE, ready to be open in browser."
   (let ((preview-file (concat (file-name-directory (buffer-file-name)) markdown-preview-file-name)))
     (if (file-exists-p preview-file)
         (delete-file preview-file))))
+
+(defun markdown-preview--random-uuid ()
+  "Insert a UUID using a simple hashing of variable data.
+Example of a UUID: 1df63142-a513-c850-31a3-535fc3520c3d
+Note: this code uses https://en.wikipedia.org/wiki/Md5,
+which is not cryptographically safe. I'm not sure what's
+the implication of its use here.
+Version 2015-01-30
+URL `http://ergoemacs.org/emacs/elisp_generate_uuid.html'"
+  ;; by Christopher Wellons, 2011-11-18. Editted by Xah Lee.
+  ;; Edited by Hideki Saito further to generate all valid variants for "N" in xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx format.
+  ;; (interactive)
+  (let ((myStr (md5 (format "%s%s%s%s%s%s%s%s%s%s"
+                            (user-uid)
+                            (emacs-pid)
+                            (system-name)
+                            (user-full-name)
+                            (current-time)
+                            (emacs-uptime)
+                            (garbage-collect)
+                            (buffer-string)
+                            (random)
+                            (recent-keys)))))
+
+    (format "%s-%s-4%s-%s%s-%s"
+            (substring myStr 0 8)
+            (substring myStr 8 12)
+            (substring myStr 13 16)
+            (format "%x" (+ 8 (random 4)))
+            (substring myStr 17 20)
+            (substring myStr 20 32))))
 
 ;;;###autoload
 (defun markdown-preview-open-browser ()
