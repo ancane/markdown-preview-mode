@@ -79,6 +79,11 @@
                  (const :tag "Via http" http)
                  (const :tag "Off" nil)))
 
+(defcustom markdown-preview-delay-time 2.0
+  "Refresh preview after this certain of time."
+  :group 'markdown-preview
+  :type 'float)
+
 (defvar markdown-preview-javascript '()
   "List of client javascript libs for preview.")
 
@@ -146,26 +151,26 @@
   (with-temp-file preview-file
     (insert-file-contents (expand-file-name "preview.html" markdown-preview--home-dir))
     (when (search-forward "${MD_STYLE}" nil t)
-        (replace-match (markdown-preview--css) t))
+      (replace-match (markdown-preview--css) t))
     (when (search-forward "${MD_JS}" nil t)
-        (replace-match (markdown-preview--scripts) t))
+      (replace-match (markdown-preview--scripts) t))
     (when (search-forward "${WS_HOST}" nil t)
-        (replace-match markdown-preview-host t))
+      (replace-match markdown-preview-host t))
     (when (search-forward "${WS_PORT}" nil t)
-        (replace-match (format "%s" markdown-preview-ws-port) t))
+      (replace-match (format "%s" markdown-preview-ws-port) t))
     (when (search-forward "${MD_UUID}" nil t)
-        (replace-match (format "%s" preview-uuid) t))
+      (replace-match (format "%s" preview-uuid) t))
     (buffer-string)))
 
 ;; Emacs 26 async network workaround
 (defun markdown-preview--fix-network-process-wait (plist)
   "Ensure PLIST contain :nowait nil."
   (if (and (>= emacs-major-version 26)
-	   (equal (plist-get plist :name) "ws-server")
-	   (plist-get plist :server)
-	   (plist-get plist :nowait))
+           (equal (plist-get plist :name) "ws-server")
+           (plist-get plist :server)
+           (plist-get plist :nowait))
       (plist-put plist :nowait nil)
-	plist))
+    plist))
 
 (defun markdown-preview--start-http-server (port)
   "Start http server at PORT to serve preview file via http."
@@ -254,8 +259,8 @@
            :on-message (lambda (websocket frame)
                          (let ((ws-frame-text (websocket-frame-payload frame)))
                            (if (and
-				(stringp ws-frame-text)
-				(string-prefix-p "MDPM-Register-UUID: " ws-frame-text))
+                                (stringp ws-frame-text)
+                                (string-prefix-p "MDPM-Register-UUID: " ws-frame-text))
                                (let ((ws-uuid (substring ws-frame-text 20)))
                                  (puthash ws-uuid websocket markdown-preview--remote-clients)
                                  (markdown-preview--send-preview-to websocket ws-uuid))
@@ -327,9 +332,10 @@
   (markdown-preview--start-local-client)
   (markdown-preview--start-http-server markdown-preview-http-port)
   (setq markdown-preview--idle-timer
-   (run-with-idle-timer 2 t (lambda ()
-                              (when markdown-preview--uuid
-                                (markdown-preview--send-preview markdown-preview--uuid)))))
+        (run-with-idle-timer markdown-preview-delay-time t
+                             (lambda ()
+                               (when markdown-preview--uuid
+                                 (markdown-preview--send-preview markdown-preview--uuid)))))
   (add-hook 'after-save-hook (lambda ()
                                (when markdown-preview--uuid
                                  (markdown-preview--send-preview markdown-preview--uuid))) nil t))
