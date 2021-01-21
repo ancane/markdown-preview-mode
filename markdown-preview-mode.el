@@ -339,7 +339,10 @@
   (remove-hook 'after-save-hook 'markdown-preview--send-preview t)
   (markdown-preview--stop-idle-timer)
   (remhash markdown-preview--uuid markdown-preview--preview-buffers)
-  (let ((preview-file (concat (file-name-directory (buffer-file-name)) markdown-preview-file-name)))
+  (let* ((preview-file-dir (if (buffer-file-name)
+                               (file-name-directory (buffer-file-name))
+                             default-directory))
+         (preview-file (concat preview-file-dir markdown-preview-file-name)))
     (if (file-exists-p preview-file)
         (delete-file preview-file))))
 
