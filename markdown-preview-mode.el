@@ -5,7 +5,7 @@
 ;; Author: Igor Shymko <igor.shimko@gmail.com>
 ;; URL: https://github.com/ancane/markdown-preview-mode
 ;; Keywords: markdown, gfm, convenience
-;; Version: 0.9.2
+;; Version: 0.9.3
 ;; Package-Requires: ((emacs "24.3") (websocket "1.6") (markdown-mode "2.0") (cl-lib "0.5") (web-server "0.1.1") )
 
 ;; This file is not part of GNU Emacs.
@@ -205,7 +205,7 @@
                          (ws-send-404 process)
                          ))))))
              markdown-preview-http-port nil :host markdown-preview-http-host))
-      (advice-remove 'make-network-process #'my-filter))))
+      (advice-remove 'make-network-process #'markdown-preview--fix-network-process-wait))))
 
 (defun markdown-preview--parse-uuid (headers)
   "Find uuid query param in HEADERS."
