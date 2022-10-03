@@ -8,6 +8,7 @@
     <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
     ${MD_JS}
     <script>
+     ${MD_JS_ONINIT}
      (function($, undefined) {
          var socket = new WebSocket("ws://${WS_HOST}:${WS_PORT}");
          socket.onopen = function() {
@@ -26,6 +27,7 @@
              $("#markdown-body").html($(event.data).find("#content").html()).trigger('mdContentChange');
              var scroll = $(document).height() * ($(event.data).find("#position-percentage").html() / 100);
              $("html, body").animate({ scrollTop: scroll }, 600);
+             ${MD_JS_ONUPDATE}
          };
          socket.onerror = function(error) {
              console.log("Error: " + error.message);
