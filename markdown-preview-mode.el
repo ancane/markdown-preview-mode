@@ -84,6 +84,16 @@
   :group 'markdown-preview
   :type 'float)
 
+(defcustom markdown-preview-script-oninit ""
+  "Markdown preview javascript which runs on init."
+  :group 'markdown-preview
+  :type 'string)
+
+(defcustom markdown-preview-script-onupdate ""
+  "Markdown preview javascript which runs on update preview."
+  :group 'markdown-preview
+  :type 'string)
+
 (defvar markdown-preview-javascript '()
   "List of client javascript libs for preview.")
 
@@ -158,12 +168,16 @@
       (replace-match (markdown-preview--css) t))
     (when (search-forward "${MD_JS}" nil t)
       (replace-match (markdown-preview--scripts) t))
+    (when (search-forward "${MD_JS_ONINIT}" nil t)
+      (replace-match markdown-preview-script-oninit t))
     (when (search-forward "${WS_HOST}" nil t)
       (replace-match markdown-preview-host t))
     (when (search-forward "${WS_PORT}" nil t)
       (replace-match (format "%s" markdown-preview-ws-port) t))
     (when (search-forward "${MD_UUID}" nil t)
       (replace-match (format "%s" preview-uuid) t))
+    (when (search-forward "${MD_JS_ONUPDATE}" nil t)
+      (replace-match markdown-preview-script-onupdate t))
     (buffer-string)))
 
 ;; Emacs 26 async network workaround
