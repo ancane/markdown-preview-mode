@@ -262,8 +262,8 @@
 (defun markdown-preview--drop-closed-clients ()
   "Clean closed clients in `markdown-preview--remote-clients' list."
   (maphash (lambda (ws-uuid websocket)
-             (unless (websocket-openp websocket))
-             (remhash ws-uuid markdown-preview--remote-clients))
+             (unless (websocket-openp websocket)
+               (remhash ws-uuid markdown-preview--remote-clients)))
            markdown-preview--remote-clients))
 
 (defun markdown-preview--start-websocket-server ()
