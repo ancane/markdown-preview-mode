@@ -1,4 +1,4 @@
-;;; markdown-preview-mode.el --- markdown realtime preview minor mode.
+;;; markdown-preview-mode.el --- markdown realtime preview minor mode. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2014 <igor.shimko@gmail.com>
 
@@ -30,7 +30,6 @@
 ;;
 ;;; Code:
 
-(eval-when-compile (require 'cl))
 (require 'cl-lib)
 (require 'websocket)
 (require 'markdown-mode)
@@ -193,7 +192,7 @@
 (defun markdown-preview--start-http-server (port)
   "Start http server at PORT to serve preview file via http."
   (unless markdown-preview--http-server
-    (lexical-let ((docroot default-directory))
+    (let ((docroot default-directory))
       (advice-add 'make-network-process :filter-args #'markdown-preview--fix-network-process-wait)
       (setq markdown-preview--http-server
             (ws-start
